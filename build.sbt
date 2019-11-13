@@ -1,4 +1,4 @@
-val Http4sVersion = "0.20.8"
+val Http4sVersion = "0.20.9"
 val CirceVersion = "0.11.1"
 val Specs2Version = "4.1.0"
 val LogbackVersion = "1.2.3"
@@ -18,7 +18,8 @@ lazy val root = (project in file("."))
       "org.specs2"      %% "specs2-core"         % Specs2Version % "test",
       "ch.qos.logback"  %  "logback-classic"     % LogbackVersion,
       "org.tpolecat"    %% "atto-core"           % "0.7.0",
-      "org.tpolecat"    %% "atto-refined"        % "0.7.0"
+      "org.tpolecat"    %% "atto-refined"        % "0.7.0",
+      "io.circe"        %% "circe-config"        % "0.6.1"
     ),
     addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.10.3"),
     addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.0")

@@ -2,19 +2,20 @@ package com.github.damdev.increase.bookkeeper.increasebookkeeper
 
 import cats.effect.Sync
 import cats.implicits._
+import com.github.damdev.increase.bookkeeper.increasebookkeeper.algebras.ClientAlg
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
 
-object IncreasebookkeeperRoutes {
+object IncreaseBookkeeperRoutes {
 
-  def jokeRoutes[F[_]: Sync](J: Jokes[F]): HttpRoutes[F] = {
+  def clientInfoRoutes[F[_]: Sync](CA: ClientAlg[F]): HttpRoutes[F] = {
     val dsl = new Http4sDsl[F]{}
     import dsl._
     HttpRoutes.of[F] {
-      case GET -> Root / "joke" =>
+      case GET -> Root / "clients" / id =>
         for {
-          joke <- J.get
-          resp <- Ok(joke)
+          clientInfo <- CA.getClientInfo(id)
+          resp <- clientInfo.map(ci => Ok(ci)).getOrElse(NotFound("There is no client with this id."))
         } yield resp
     }
   }
