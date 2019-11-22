@@ -11,7 +11,7 @@ import com.github.damdev.increase.bookkeeper.increasebookkeeper.parser.model._
 
 object TransactionsFileParser {
 
-  def parse(line: String): Either[String, Record] = recordTypeParser.parseOnly(line).either
+  def parse(line: String): Either[String, Record] = recordTypeParser.parseOnly(line).either.leftMap(l => s"Error $l for line $line")
 
   private val recordTypeParser: Parser[Record] = digit.collect {
     case '1' => headerParser

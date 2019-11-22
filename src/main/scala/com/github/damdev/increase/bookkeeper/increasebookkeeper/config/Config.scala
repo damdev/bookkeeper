@@ -11,7 +11,7 @@ import scala.concurrent.duration.FiniteDuration
 case class AppSettings(increase: IncreaseConfig)
 case class IncreaseConfig(clientApi: ClientApiConfig, fileImport: FileImportConfig)
 case class ClientApiConfig(endpoint: String, authorization: String)
-case class FileImportConfig(interval: FiniteDuration, fileUri: String)
+case class FileImportConfig(interval: FiniteDuration, fileUri: String, authorization: String)
 
 object ConfigFactory {
 

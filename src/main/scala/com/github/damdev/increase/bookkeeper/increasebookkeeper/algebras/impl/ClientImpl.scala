@@ -10,7 +10,7 @@ import org.http4s.client.Client
 import org.http4s.client.dsl.Http4sClientDsl
 import org.http4s.{Header, Headers, InvalidMessageBodyFailure, Request, Uri}
 
-class ClientAlgImpl[F[_] : Sync](httpClient: org.http4s.client.Client[F], config: ClientApiConfig) extends ClientAlg[F] {
+class ClientImpl[F[_] : Sync](httpClient: org.http4s.client.Client[F], config: ClientApiConfig) extends ClientAlg[F] {
   val dsl = new Http4sClientDsl[F] {}
 
   def getClientInfo(id: String): F[Option[ClientInfo]] = {
@@ -23,6 +23,6 @@ class ClientAlgImpl[F[_] : Sync](httpClient: org.http4s.client.Client[F], config
   }
 }
 
-object ClientAlgImpl {
-  def apply[F[_]: Sync](httpClient: Client[F], config: ClientApiConfig): ClientAlg[F] = new ClientAlgImpl(httpClient, config)
+object ClientImpl {
+  def apply[F[_]: Sync](httpClient: Client[F], config: ClientApiConfig): ClientAlg[F] = new ClientImpl(httpClient, config)
 }

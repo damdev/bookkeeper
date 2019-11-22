@@ -40,10 +40,10 @@ class TransactionsFileParserSpec extends Specification {
 
   def invalidRecordType = {
     val r = TransactionsFileParser.parse("02cfd15c1a578422ea337505c62517894   000000014842612900000020175720000146408557")
-    r must beLeft("Invalid record type")
+    r must beLeft("Error Invalid record type for line 02cfd15c1a578422ea337505c62517894   000000014842612900000020175720000146408557")
   }
   def invalidAmount = {
     val r = TransactionsFileParser.parse("273f97bdd75a84646aa1d3fd5d9be77250000a08879893     1")
-    r must beLeft("Failure reading:digit")
+    r must beLeft("Error Failure reading:digit for line 273f97bdd75a84646aa1d3fd5d9be77250000a08879893     1")
   }
 }
