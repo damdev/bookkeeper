@@ -1,4 +1,4 @@
-package com.github.damdev.increase.bookkeeper.increasebookkeeper
+package com.github.damdev.bookkeeper
 
 import cats.effect.IO
 import org.http4s._

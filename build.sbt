@@ -5,8 +5,8 @@ val LogbackVersion = "1.2.3"
 
 lazy val root = (project in file("."))
   .settings(
-    organization := "com.github.damdev.increase.bookkeeper",
-    name := "increase-bookkeeper",
+    organization := "com.github.damdev.bookkeeper",
+    name := "bookkeeper",
     version := "0.0.1-SNAPSHOT",
     scalaVersion := "2.12.8",
     libraryDependencies ++= Seq(

@@ -1,9 +1,9 @@
-package com.github.damdev.increase.bookkeeper.increasebookkeeper
+package com.github.damdev.bookkeeper
 
 import java.time.LocalDate
 
-import com.github.damdev.increase.bookkeeper.increasebookkeeper.parser.TransactionsFileParser
-import com.github.damdev.increase.bookkeeper.increasebookkeeper.parser.model._
+import com.github.damdev.bookkeeper.parser.TransactionsFileParser
+import com.github.damdev.bookkeeper.parser.model._
 import org.specs2._
 
 class TransactionsFileParserSpec extends Specification {
