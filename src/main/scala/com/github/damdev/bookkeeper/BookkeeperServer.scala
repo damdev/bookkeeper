@@ -16,24 +16,23 @@ import org.http4s.server.middleware.Logger
 
 import scala.concurrent.ExecutionContext.global
 
-object IncreasebookkeeperServer {
+object BookkeeperServer {
 
   def stream[F[_]: ConcurrentEffect](implicit T: Timer[F], C: ContextShift[F]): Stream[F, Nothing] = {
     for {
       client <- BlazeClientBuilder[F](global).stream
       config <- Stream.fromEither[F](ConfigFactory.load)
-      helloWorldAlg = HelloWorld.impl[F]
-      clientAlg: ClientAlg[F] = ClientImpl[F](client, config.increase.clientApi)
-      fileImportAlg: FileImportAlg[F] = FileImportImpl[F](client, config.increase.fileImport)
-      transactor = DBTransactor.build[F]
+      clientAlg: ClientAlg[F] = ClientImpl[F](client, config.bookkeeper.clientApi)
+      fileImportAlg: FileImportAlg[F] = FileImportImpl[F](client, config.bookkeeper.fileImport)
+      transactor = DBTransactor.build[F](config.bookkeeper.db)
       paymentDBAlg: PaymentDBAlg[ConnectionIO] = PaymentDBImpl()
       paymentAlg: PaymentAlg[F] = PaymentImpl(paymentDBAlg, transactor)
       fileProcessorAlg: FileProcessorAlg[F] = FileProcessorImpl[F](paymentAlg)
 
       httpApp = (
-        IncreaseBookkeeperRoutes.helloWorldRoutes[F](helloWorldAlg) <+>
-        IncreaseBookkeeperRoutes.clientInfoRoutes[F](clientAlg) <+>
-        IncreaseBookkeeperRoutes.fileImportRoutes[F](fileImportAlg, fileProcessorAlg)
+        BookkeeperRoutes.clientInfoRoutes[F](clientAlg) <+>
+        BookkeeperRoutes.paymentRoutes[F](paymentAlg) <+>
+        BookkeeperRoutes.fileImportRoutes[F](fileImportAlg, fileProcessorAlg)
       ).orNotFound
 
       // With Middlewares in place

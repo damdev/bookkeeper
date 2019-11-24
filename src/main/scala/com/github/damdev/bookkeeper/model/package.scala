@@ -6,6 +6,18 @@ import com.github.damdev.bookkeeper.parser.model._
 
 package object model {
 
+  trait PaymentStatus
+  object PaymentStatus {
+    def of(s: String): PaymentStatus = {
+      s.toLowerCase match {
+        case "pending" => Pending
+        case "paid" => Paid
+      }
+    }
+  }
+  case object Pending extends PaymentStatus
+  case object Paid extends PaymentStatus
+
   case class Payment(id: String,
                      clientId: String,
                      date: LocalDate,

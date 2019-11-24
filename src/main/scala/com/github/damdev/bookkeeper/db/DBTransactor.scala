@@ -1,16 +1,14 @@
 package com.github.damdev.bookkeeper.db
 
 import cats.effect.{Async, Blocker, ContextShift, IO}
+import com.github.damdev.bookkeeper.config.{AppSettings, DBConfig}
 import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor
 
 object DBTransactor {
 
-  def build[M[_]: Async: ContextShift]: Transactor[M] = Transactor.fromDriverManager[M](
-      "org.mariadb.jdbc.Driver",     // driver classname
-      "jdbc:mariadb://127.0.0.1:33060/bookkeeper?serverTimezone=UTC",     // connect URL (driver-specific)
-      "bookkeeper",                  // user
-      "secret",                          // password
+  def build[M[_]: Async: ContextShift](config: DBConfig): Transactor[M] = Transactor.fromDriverManager[M](
+      config.driver, config.url, config.user, config.password,
       Blocker.liftExecutionContext(ExecutionContexts.synchronous) // just for testing
     )
 

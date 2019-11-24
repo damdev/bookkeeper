@@ -16,7 +16,8 @@ class FileProcessorImpl[F[_]: Sync](paymentAlg: PaymentAlg[F]) extends FileProce
 
   override def processAndSave(records: F[Seq[Either[String, Record]]]): F[Seq[Payment]] = {
     val builded: F[Seq[Payment]] = records.map(processRecords)
-    builded.flatMap(ps => ps.toList.map(paymentAlg.savePayment).sequence.map(_.toSeq))
+    val a: F[List[Option[Payment]]] = builded.flatMap(ps => ps.toList.map(paymentAlg.savePayment).sequence)
+    a.map(_.flatten.toSeq)
   }
 
   private def processRecords(s: Seq[Either[String, Record]]): Seq[Payment] = {
