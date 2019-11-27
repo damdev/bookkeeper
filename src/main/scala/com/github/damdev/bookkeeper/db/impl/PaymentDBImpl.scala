@@ -8,6 +8,7 @@ import com.github.damdev.bookkeeper.parser.model.{Currency, Discount, Transactio
 import doobie.free.connection.ConnectionIO
 import doobie.syntax._
 import cats._
+import cats.implicits._
 import cats.data.OptionT
 import cats.implicits._
 import doobie.implicits._
@@ -35,7 +36,7 @@ class PaymentDBImpl extends PaymentDBAlg[ConnectionIO] {
 
   def insertTransactions(p: Payment): ConnectionIO[Int] = {
     val sql = "insert into transactions(id, amount, type, payment_id) values (?, ?, ?, ?)"
-    Update[TransactionInfo](sql).updateMany(p.transactions.map(toTransactionInfo(p.id)))
+    Update[TransactionInfo](sql).updateMany(p.transactions.getOrElse(Nil).map(toTransactionInfo(p.id)))
   }
 
   type DiscountInfo = (String, BigDecimal, String, String)
@@ -44,7 +45,7 @@ class PaymentDBImpl extends PaymentDBAlg[ConnectionIO] {
 
   def insertDiscounts(p: Payment): ConnectionIO[Int] = {
     val sql = "insert into discounts(id, amount, type, payment_id) values (?, ?, ?, ?)"
-    Update[DiscountInfo](sql).updateMany(p.discounts.map(toDiscountInfo(p.id)))
+    Update[DiscountInfo](sql).updateMany(p.discounts.getOrElse(Nil).map(toDiscountInfo(p.id)))
   }
 
   def existsPayment(p: Payment): ConnectionIO[Boolean] = {
@@ -66,7 +67,7 @@ class PaymentDBImpl extends PaymentDBAlg[ConnectionIO] {
       .query[(String, String, LocalDate, String, BigDecimal, BigDecimal, BigDecimal)]
       .map{ t =>
         val (id, clientId, date, currency, totalAmount, totalDiscounts, totalWithDiscounts) = t
-        Payment(id, clientId, date, Currency.parse(currency).get, totalAmount, totalDiscounts, totalWithDiscounts, Nil, Nil)
+        Payment(id, clientId, date, Currency.parse(currency).get, totalAmount, totalDiscounts, totalWithDiscounts, None, None)
       }.to[List]
   }
 
@@ -75,8 +76,17 @@ class PaymentDBImpl extends PaymentDBAlg[ConnectionIO] {
     .query[(String, String, LocalDate, String, BigDecimal, BigDecimal, BigDecimal)]
     .map{ t =>
       val (id, clientId, date, currency, totalAmount, totalDiscounts, totalWithDiscounts) = t
-      Payment(id, clientId, date, Currency.parse(currency).get, totalAmount, totalDiscounts, totalWithDiscounts, Nil, Nil)
+      Payment(id, clientId, date, Currency.parse(currency).get, totalAmount, totalDiscounts, totalWithDiscounts, None, None)
     }.to[List]
+  }
+
+  override def findTransactionsForClient(clientId: String): ConnectionIO[List[Transaction]] = {
+    sql"select t.id, t.amount, t.type from transactions t inner join payments p on (t.payment_id = p.id) where p.client_id = ${clientId}"
+      .query[(String, BigDecimal, String)]
+      .map{ t =>
+        val (id, amount, tt) = t
+        Transaction(id, amount, TransactionType.parse(tt).get)
+      }.to[List]
   }
 
 }

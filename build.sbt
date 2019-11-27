@@ -8,7 +8,7 @@ lazy val root = (project in file("."))
     organization := "com.github.damdev.bookkeeper",
     name := "bookkeeper",
     version := "0.0.1-SNAPSHOT",
-    scalaVersion := "2.12.8",
+    scalaVersion := "2.12.10",
     libraryDependencies ++= Seq(
       "org.http4s"      %% "http4s-blaze-server"  % Http4sVersion,
       "org.http4s"      %% "http4s-blaze-client"  % Http4sVersion,

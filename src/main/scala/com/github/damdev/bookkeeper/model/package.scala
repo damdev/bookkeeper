@@ -25,8 +25,8 @@ package object model {
                      totalAmount: BigDecimal,
                      totalDiscounts: BigDecimal,
                      totalWithDiscounts: BigDecimal,
-                     transactions: List[Transaction],
-                     discounts: List[Discount])
+                     transactions: Option[List[Transaction]],
+                     discounts: Option[List[Discount]])
 
   case class PaymentBuilder(header: Option[Header] = None, transactions: List[Transaction] = Nil, discounts: List[Discount] = Nil, footer: Option[Footer] = None) {
     def withHeader(h: Header) = this.copy(header = Some(h))
@@ -38,7 +38,7 @@ package object model {
       for {
         h <- header
         f <- footer
-      } yield Payment(h.paymentId, f.clientId, f.paymentDate, h.currency, h.totalAmount, h.totalDiscounts, h.totalWithDiscounts, transactions, discounts)
+      } yield Payment(h.paymentId, f.clientId, f.paymentDate, h.currency, h.totalAmount, h.totalDiscounts, h.totalWithDiscounts, Some(transactions), Some(discounts))
     }
   }
 

@@ -1,9 +1,15 @@
-FROM instructure/scala-sbt:1.2 AS sbt-build
+FROM openjdk:11 AS sbt-build
+RUN echo "deb http://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list
+RUN curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add
+RUN apt-get update
+RUN apt-get install sbt
 WORKDIR /app/
 COPY . .
-RUN sbt package
+RUN echo "\n -J-Xss2M" > /etc/sbt/sbtopts
+RUN sbt update
+RUN sbt assembly
 
-FROM instructure/java:8-xenial AS app-run
+FROM openjdk:11 AS app-run
 WORKDIR /app/
 COPY --from=sbt-build /app/target/scala-2.12/bookkeeper-assembly-*.jar /app/
 EXPOSE 8080

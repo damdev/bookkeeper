@@ -10,8 +10,8 @@ import doobie.free.connection.ConnectionIO
 import doobie.implicits._
 import doobie.util.transactor.Transactor
 import cats.implicits._
-import com.github.damdev.bookkeeper.model
-import com.github.damdev.bookkeeper.parser.model.{ARS, USD}
+import com.github.damdev.bookkeeper.model._
+import com.github.damdev.bookkeeper.parser.model._
 import org.slf4j.LoggerFactory
 
 class PaymentImpl[F[_]: Sync](paymentDBAlg: PaymentDBAlg[ConnectionIO], transactor: Transactor[F]) extends PaymentAlg[F] {
@@ -32,15 +32,19 @@ class PaymentImpl[F[_]: Sync](paymentDBAlg: PaymentDBAlg[ConnectionIO], transact
 
   private def buildSummary(ps: List[Payment]): PaymentsSummary = {
     val (arsPayments, usdPayments) = ps.partition(_.currency == ARS)
-    PaymentsSummary(ps, Map(ARS.toString -> calculateTotals(arsPayments), USD.toString -> calculateTotals(usdPayments)))
+    PaymentsSummary(Map(ARS.toString -> calculateTotals(arsPayments), USD.toString -> calculateTotals(usdPayments)))
   }
 
-  override def summary(clientId: String, status: model.PaymentStatus): F[PaymentsSummary] = {
+  override def summary(clientId: String, status: PaymentStatus): F[PaymentsSummary] = {
     val ps = status match {
       case Pending => paymentDBAlg.findForClientAndAfterPaymentDate(clientId, LocalDate.now())
       case Paid => paymentDBAlg.findForClientAndBeforePaymentDate(clientId, LocalDate.now())
     }
     ps.transact(transactor).map(buildSummary)
+  }
+
+  override def transactions(clientId: String): F[List[Transaction]] = {
+    paymentDBAlg.findTransactionsForClient(clientId).transact(transactor)
   }
 }
 

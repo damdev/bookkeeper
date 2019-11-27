@@ -32,6 +32,7 @@ object BookkeeperServer {
       httpApp = (
         BookkeeperRoutes.clientInfoRoutes[F](clientAlg) <+>
         BookkeeperRoutes.paymentRoutes[F](paymentAlg) <+>
+        BookkeeperRoutes.transactionsRoutes[F](paymentAlg) <+>
         BookkeeperRoutes.fileImportRoutes[F](fileImportAlg, fileProcessorAlg)
       ).orNotFound
 
