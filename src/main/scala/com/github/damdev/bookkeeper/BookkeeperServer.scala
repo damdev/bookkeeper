@@ -13,12 +13,16 @@ import org.http4s.client.blaze.{BlazeClientBuilder, BlazeClientConfig}
 import org.http4s.implicits._
 import org.http4s.server.blaze.BlazeServerBuilder
 import org.http4s.server.middleware.Logger
+import org.slf4j.LoggerFactory
+import cats.syntax._
 
 import scala.concurrent.ExecutionContext.global
 
 object BookkeeperServer {
+  import scala.concurrent.duration._
+  private val logger = LoggerFactory.getLogger(this.getClass)
 
-  def stream[F[_]: ConcurrentEffect](implicit T: Timer[F], C: ContextShift[F]): Stream[F, Nothing] = {
+  def stream[F[_]: ConcurrentEffect](cronAlg: CronAlg[F])(implicit T: Timer[F], C: ContextShift[F]): Stream[F, Nothing] = {
     for {
       client <- BlazeClientBuilder[F](global).stream
       config <- Stream.fromEither[F](ConfigFactory.load)
@@ -27,7 +31,17 @@ object BookkeeperServer {
       transactor = DBTransactor.build[F](config.bookkeeper.db)
       paymentDBAlg: PaymentDBAlg[ConnectionIO] = PaymentDBImpl()
       paymentAlg: PaymentAlg[F] = PaymentImpl(paymentDBAlg, transactor)
+
+      _ <- Stream.eval(paymentAlg.initDB)
+
       fileProcessorAlg: FileProcessorAlg[F] = FileProcessorImpl[F](paymentAlg)
+
+      _ <- cronAlg.cron(config.bookkeeper.fileImport.interval)(
+        cronAlg.delay(logger.info("Start file import process"))
+          *> fileProcessorAlg.processAndSave(fileImportAlg.importFile()).attempt.map(
+            _.left.foreach(t => logger.error("Error importing file", t))
+          ) <*
+          cronAlg.delay(logger.info("End file import process")))
 
       httpApp = (
         BookkeeperRoutes.clientInfoRoutes[F](clientAlg) <+>

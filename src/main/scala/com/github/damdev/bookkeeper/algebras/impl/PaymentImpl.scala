@@ -46,6 +46,8 @@ class PaymentImpl[F[_]: Sync](paymentDBAlg: PaymentDBAlg[ConnectionIO], transact
   override def transactions(clientId: String): F[List[Transaction]] = {
     paymentDBAlg.findTransactionsForClient(clientId).transact(transactor)
   }
+
+  override def initDB: F[Unit] = paymentDBAlg.initDB.transact(transactor)
 }
 
 object PaymentImpl {

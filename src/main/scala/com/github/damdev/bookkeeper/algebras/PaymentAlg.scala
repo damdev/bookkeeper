@@ -17,7 +17,7 @@ case class PaymentsSummary(totals: Map[String, PaymentTotals]) extends AnyVal
 trait PaymentAlg[F[_]] {
   def summary(clientId: String, status: model.PaymentStatus): F[PaymentsSummary]
   def transactions(clientId: String): F[List[Transaction]]
-
+  def initDB: F[Unit]
 
   def savePayment(payment: Payment): F[Option[Payment]]
 }

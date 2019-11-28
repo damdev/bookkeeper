@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  database:
+    image: mariadb:10.4
+    environment:
+      MYSQL_ROOT_PASSWORD: bookkeeper
+      MYSQL_USER: bookkeeper
+      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: bookkeeper
+    expose:
+      - "3306"
+  bookkeeper:
+    # build: .
+    image: damdev/bookkeeper:0.0.1
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database

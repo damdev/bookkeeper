@@ -6,6 +6,8 @@ import com.github.damdev.bookkeeper.model.Payment
 import com.github.damdev.bookkeeper.parser.model.Transaction
 
 trait PaymentDBAlg[F[_]] {
+  def initDB: F[Unit]
+
   def findForClientAndBeforePaymentDate(clientId: String, date: LocalDate): F[List[Payment]]
   def findForClientAndAfterPaymentDate(clientId: String, date: LocalDate): F[List[Payment]]
   def findTransactionsForClient(clientId: String): F[List[Transaction]]

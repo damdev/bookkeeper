@@ -10,10 +10,11 @@ RUN sbt update
 RUN sbt assembly
 
 FROM openjdk:11 AS app-run
+RUN mkdir /app
 WORKDIR /app/
-COPY --from=sbt-build /app/target/scala-2.12/bookkeeper-assembly-*.jar /app/
+COPY --from=sbt-build /app/target/scala-2.12/bookkeeper-assembly-0.0.1.jar /app/
 EXPOSE 8080
 ENTRYPOINT ["java"]
-CMD ["-jar", "/app/bookkeeper-assembly-*.jar"]
+CMD ["-jar", "/app/bookkeeper-assembly-0.0.1.jar"]
 
 
