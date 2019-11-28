@@ -3,13 +3,13 @@ BookKeeper
 
 API:
 
-`/transactions?client_id=XXXXX` : Transacciones registradas para un cliente en particular.
+`${endpoint}/transactions?client_id=XXXXX` : Transacciones registradas para un cliente en particular.
 
-`/payments?client_id=XXXXX&status=paid` : Pagos procesados para un cliente.
+`${endpoint}/payments?client_id=XXXXX&status=paid` : Pagos procesados para un cliente.
 
-`/payments?client_id=XXXXX&status=pending` : Pagos pendientes para un cliente.
+`${endpoint}/payments?client_id=XXXXX&status=pending` : Pagos pendientes para un cliente.
 
-`/file-import` : Forzar la importación del archivo.
+`${endpoint}/file-import` : Forzar la importación del archivo.
 
 Posibles mejoras:
 
@@ -25,4 +25,8 @@ Decisiones de implementacion:
 Setup
 =====
 
-Correr el script `run.sh` en la raiz del proyecto, esto va a levantar un docker-compose con dos containers, un mariadb para la base de datos y otro con la aplicacion, 
+Correr el script `run.sh` en la raiz del proyecto, esto va a levantar un docker-compose con dos containers, un mariadb para la base de datos y otro con la aplicacion.
+
+Este script va a levantar la app en el endpoint `http://localhost:8080`
+
+Nota: Como el build tarda bastante, la imagen de la aplicacion fue publicada en docker hub. 

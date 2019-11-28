@@ -10,6 +10,8 @@ services:
     expose:
       - "3306"
   bookkeeper:
+    # Descomentar esta linea para buildear una nueva version
+    # imagen publicada en docker hub porque el build tarda bastante
     # build: .
     image: damdev/bookkeeper:0.0.1
     ports:
