@@ -36,7 +36,6 @@ object BookkeeperServer {
         BookkeeperRoutes.fileImportRoutes[F](fileImportAlg, fileProcessorAlg)
       ).orNotFound
 
-      // With Middlewares in place
       finalHttpApp = Logger.httpApp(true, true)(httpApp)
 
       exitCode <- BlazeServerBuilder[F]

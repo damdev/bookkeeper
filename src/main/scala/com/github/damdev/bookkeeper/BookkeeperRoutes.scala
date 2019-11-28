@@ -31,16 +31,6 @@ object BookkeeperRoutes {
     HttpRoutes.of[F] {
       case GET -> Root / "file-import" =>
         for {
-          parsedFile <- FI.importFile()
-          resp <- Ok(parsedFile.flatMap(_.toOption).toList)
-        } yield resp
-      case GET -> Root / "file-process" =>
-        for {
-          payments <- FP.process(FI.importFile())
-          resp <- Ok(payments)
-        } yield resp
-      case GET -> Root / "file-process-save" =>
-        for {
           payments <- FP.processAndSave(FI.importFile())
           resp <- Ok(payments)
         } yield resp
